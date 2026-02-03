@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="./pico.min.css">
+    <link rel="icon" type="image/svg" href="./accent.svg" sizes="32x32">
+    <title>druckr</title>
+</head>
+
+<body>
+
+    <main class="container">
+        <nav>
+            <ul>
+                <li><strong>druckr</strong></li>
+            </ul>
+            <ul>
+                <li><a href="/graphql">Graphql</a></li>
+            </ul>
+        </nav>
+        <h1>Write A Letter</h1>
+
+        <form>
+            <fieldset>
+                <label>
+                    From
+                    <input
+                        name="from"
+                        placeholder="Your Name"
+                        autocomplete="given-name" />
+                </label>
+                <label>
+                    To
+                    <input
+                        name="to"
+                        placeholder="To" />
+                </label>
+            </fieldset>
+            <textarea
+                name="letter"
+                placeholder="Write your letter..."
+                aria-label="Letter text" rows="8"></textarea>
+            <button>Print</button>
+        </form>
+    </main>
+</body>
+
+</html>

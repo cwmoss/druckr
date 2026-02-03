@@ -32,3 +32,8 @@ tower-http = { version = "0.6.8", features = ["fs"] }
 tower-sessions = "0.14.0"
 webbrowser = "1.0.6"
 zip = "7.1.0"
+typst-bake = "0.1"
+
+[package.metadata.typst-bake]
+template-dir = "./templates" # Path to your .typ files and assets
+fonts-dir = "./fonts"        # Path to your font files

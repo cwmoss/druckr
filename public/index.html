@@ -1,51 +1,82 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light dark">
-    <link rel="stylesheet" href="./pico.min.css">
-    <link rel="icon" type="image/svg" href="./accent.svg" sizes="32x32">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="./pico.min.css" />
+    <link rel="icon" type="image/svg" href="./accent.svg" sizes="32x32" />
     <title>druckr</title>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <main class="container">
-        <nav>
-            <ul>
-                <li><strong>druckr</strong></li>
-            </ul>
-            <ul>
-                <li><a href="/graphql">Graphql</a></li>
-            </ul>
-        </nav>
-        <h1>Write A Letter</h1>
+      <nav>
+        <ul>
+          <li><strong>druckr</strong></li>
+        </ul>
+        <ul>
+          <li><a href="/graphql">Graphql API</a></li>
+        </ul>
+      </nav>
+      <h1>Write A Letter</h1>
 
-        <form>
-            <fieldset>
-                <label>
-                    From
-                    <input
-                        name="from"
-                        placeholder="Your Name"
-                        autocomplete="given-name" />
-                </label>
-                <label>
-                    To
-                    <input
-                        name="to"
-                        placeholder="To" />
-                </label>
-            </fieldset>
-            <textarea
-                name="letter"
-                placeholder="Write your letter..."
-                aria-label="Letter text" rows="8"></textarea>
-            <button>Print</button>
-        </form>
+      <form id="letter" method="POST">
+        <fieldset>
+          <label>
+            From
+            <input
+              name="from"
+              placeholder="Your Name"
+              autocomplete="given-name"
+              id="from"
+            />
+          </label>
+          <label>
+            To
+            <input name="to" placeholder="To" id="to" />
+          </label>
+        </fieldset>
+        <textarea
+          id="msg"
+          name="letter"
+          placeholder="Write your letter..."
+          aria-label="Letter text"
+          rows="8"
+        ></textarea>
+        <button id="printit">Print</button>
+        <output id="pdfresult" style="padding-left: 1rem"></output>
+      </form>
     </main>
-</body>
+    <script type="module">
+      let printing = async function (ev) {
+        ev.preventDefault();
+        let btn = document.getElementById("printit");
+        let out = document.getElementById("pdfresult");
+        btn.setAttribute("aria-busy", true);
+        console.log("abgeschickt", ev.target);
+        const PRINT_LETTER = `query ($from: String, $to: String, $msg: String) {
+        letter(from:$from, to:$to, msg:$msg)
+      }`;
+        let res = await fetch("/graphql", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: PRINT_LETTER,
+            variables: {
+              from: window.from.value,
+              to: window.to.value,
+              msg: window.msg.value,
+            },
+          }),
+        });
+        let data = await res.json();
+        btn.removeAttribute("aria-busy");
+        console.log("resp data", data, out);
+        out.innerHTML = `<a href="/download/${data.data.letter}" target="pdf-result">download PDF</a>`;
+      };
 
+      window.letter.addEventListener("submit", printing);
+    </script>
+  </body>
 </html>

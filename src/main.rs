@@ -1,8 +1,8 @@
 pub mod api;
 pub mod config;
 
-use std::collections::HashMap;
 use std::time::Instant;
+use std::{collections::HashMap, path::PathBuf};
 
 use crate::config::Config;
 use axum::{
@@ -18,6 +18,7 @@ use rust_embed::Embed;
 use serde_json::json;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
+use std::{env, fs};
 
 #[derive(Clone)]
 pub struct AppState {
@@ -54,6 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // .with_state(state)
         // .nest("/data", data_router)
         // .route("/graphql", get(graphiql).post_service(GraphQL::new(schema)))
+        .route("/download/{pdf}", get(download_pdf))
         .route("/favicon.ico", get(favicon))
         .route("/{*file}", get(static_handler))
         .route("/", get(index))
@@ -95,6 +97,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 async fn not_found() -> Html<&'static str> {
     Html("<h1>404</h1><p>Not Found 😥</p>")
+}
+
+async fn download_pdf(
+    State(app_state): State<Arc<AppState>>,
+    Path(pdf): Path<String>,
+) -> impl axum::response::IntoResponse {
+    // let dispo = format!("attachment; filename=\"{}.zip\"", album);
+    let path = PathBuf::from(env::current_dir().unwrap().to_string_lossy().to_string()).join(pdf);
+
+    if let Some(data) = fs::read(path).ok() {
+        let mut headers = axum::http::HeaderMap::new();
+        headers.insert(
+            header::CONTENT_TYPE,
+            HeaderValue::from_static("application/pdf"),
+        );
+        /*headers.insert(
+            header::CONTENT_DISPOSITION,
+            HeaderValue::from_str(&format!("attachment; filename=\"{}.zip\"", album)).unwrap(),
+        );*/
+        return (headers, data).into_response();
+    }
+    return "PDF not found".into_response();
 }
 
 #[derive(Embed)]

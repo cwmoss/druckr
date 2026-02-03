@@ -10,7 +10,6 @@ use axum::{
     body::{Body, Bytes},
     extract::{DefaultBodyLimit, FromRequest, Multipart, Path, Request, State},
     http::{HeaderValue, StatusCode, header},
-    middleware,
     response::{Html, IntoResponse, Json, Redirect, Response},
     routing::{get, post},
     serve::Listener,
@@ -19,9 +18,6 @@ use rust_embed::Embed;
 use serde_json::json;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
-
-// use starwars::{QueryRoot, StarWars};
-// use tokio::net::TcpListener;
 
 #[derive(Clone)]
 pub struct AppState {

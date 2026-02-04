@@ -20,7 +20,7 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::{env, fs};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct AppState {
     pub conf: Config,
     // pub datasets: HashMap<String, Dataset>,
@@ -49,7 +49,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let state = Arc::new(app_state);
 
     // let data_router = dataset_handler::get_routes();
-    let api_routes = api::api_routes();
+    let api_routes = api::api_routes(state.clone());
 
     let router = Router::new()
         // .with_state(state)
@@ -103,7 +103,6 @@ async fn download_pdf(
     State(app_state): State<Arc<AppState>>,
     Path(pdf): Path<String>,
 ) -> impl axum::response::IntoResponse {
-    // let dispo = format!("attachment; filename=\"{}.zip\"", album);
     let path = PathBuf::from(env::current_dir().unwrap().to_string_lossy().to_string()).join(pdf);
 
     if let Some(data) = fs::read(path).ok() {
@@ -114,7 +113,7 @@ async fn download_pdf(
         );
         /*headers.insert(
             header::CONTENT_DISPOSITION,
-            HeaderValue::from_str(&format!("attachment; filename=\"{}.zip\"", album)).unwrap(),
+            HeaderValue::from_str(&format!("attachment; filename=\"{}\"", pdf)).unwrap(),
         );*/
         return (headers, data).into_response();
     }

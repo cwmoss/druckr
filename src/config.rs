@@ -1,7 +1,7 @@
 use std::env;
 use std::path::PathBuf;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Config {
     pub base: PathBuf,
     pub var: PathBuf,

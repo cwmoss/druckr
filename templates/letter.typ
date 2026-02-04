@@ -1,5 +1,4 @@
 #import sys: inputs
-// typst compile --font-path ./fonts/ game.typ
 
 #let red = rgb("#DD292C")
 #let yellow = rgb("#F5C730")
@@ -21,7 +20,7 @@
 
 Abs: *#from*
 
-To: *#to*
+An: *#to*
 
 #msg
 
